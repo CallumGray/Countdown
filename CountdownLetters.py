@@ -1,4 +1,5 @@
 import random
+from CountdownTrie import Trie
 
 # Countdown weights letters, so some letters have more chance of appearing than others
 vowels = {'a': 15, 'e': 21, 'i': 13, 'o': 13, 'u': 5}
@@ -16,3 +17,5 @@ def sampleLetters(n_vowels, n_consonants):
     return samples
 
 print(sampleLetters(4, 5))
+
+trie = Trie()
