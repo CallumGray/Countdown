@@ -65,10 +65,17 @@ for word in word_dictionary:
 
 samples = sample_letters(3, 6)
 
-print('Samples: ',samples)
+print('Samples: ', samples, "\n")
 
 words_from_letters = trie.find_words(samples, trie.root_node)
+words_from_letters.sort(key=len, reverse=True)
+max_length = len(words_from_letters[0])
 
-print(words_from_letters)
+for word in words_from_letters:
+    if len(word) == max_length:
+        print(word)
+        print(word_dictionary[word], "\n")
+    else:
+        break
 
-# order by length
+# print(words_from_letters)
