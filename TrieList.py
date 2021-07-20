@@ -73,8 +73,9 @@ class TrieList:
             for letter in set(letters):
                 if letter == child.letter:
                     # Remove 1st element of the letter from letters
-                    letters.remove(letter)
-                    valid_words += self.find_words(letters, child, prefix + child.letter)
+                    letters_copy = letters.copy()
+                    letters_copy.remove(letter)
+                    valid_words += self.find_words(letters_copy, child, prefix + child.letter)
 
         return valid_words
 

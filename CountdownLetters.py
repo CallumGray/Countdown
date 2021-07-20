@@ -63,9 +63,9 @@ for word in word_dictionary:
 #
 #
 
-samples = sample_letters(4, 5)
+samples = sample_letters(3, 6)
 
-print(samples)
+print('Samples: ',samples)
 
 words_from_letters = trie.find_words(samples, trie.root_node)
 
