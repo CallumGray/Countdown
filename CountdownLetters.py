@@ -32,9 +32,11 @@ def sample_letters(n_vowels, n_consonants):
 #
 #
 
+# Generate new trie
 trie = TrieList()
 
 
+# Split lines of text file
 def load_words():
     with open('Words_Definitions.txt') as word_file:
         words = word_file.read().splitlines()[2:]
@@ -43,19 +45,23 @@ def load_words():
 
 
 word_set = load_words()
+
+# Dictionary of Word:Definition to populate
 word_dictionary = {}
 
 for word_definition in word_set:
+
+    # Split each line to word and definition
     (word, definition) = word_definition.split("\t")
 
-    # remove any words with more than 9 letters
+    # Only include words with 9 letters or less
     if len(word) < 10:
         word_dictionary[word] = definition
 
+# Add words to trie
 for word in word_dictionary:
     trie.add_word(word)
 
-# trie.print_trie(10,trie.root_node)
 
 #
 #
@@ -63,19 +69,69 @@ for word in word_dictionary:
 #
 #
 
-samples = sample_letters(3, 6)
+def print_words(letters: [str]):
 
-print('Samples: ', samples, "\n")
+    print('Letters: ', letters, "\n")
 
-words_from_letters = trie.find_words(samples, trie.root_node)
-words_from_letters.sort(key=len, reverse=True)
-max_length = len(words_from_letters[0])
+    # Find words from the trie and order them by length
+    words_from_letters = trie.find_words(letters, trie.root_node)
+    words_from_letters.sort(key=len, reverse=True)
 
-for word in words_from_letters:
-    if len(word) == max_length:
-        print(word)
-        print(word_dictionary[word], "\n")
-    else:
+    # Only show words with max length, printing the word and definition
+    max_length = len(words_from_letters[0])
+
+    for word in words_from_letters:
+        if len(word) == max_length:
+            print(word)
+            print(word_dictionary[word], "\n")
+        else:
+            break
+
+
+#
+#
+# User input
+#
+#
+
+while True:
+    mode = ''
+
+    while mode != 'R' and mode != 'C' and mode != 'X':
+        mode = input("Random [R], Chosen [C], Exit[X]\n").upper()
+
+    # Random selected, so prompt the amount of vowels/consonants
+    if mode == 'R':
+
+        n_vowels = -1
+
+        while not 0 <= n_vowels < 10:
+
+            try:
+                n_vowels = int(input('How many Vowels? (out of 9) \n'))
+                if not 0 <= n_vowels < 10:
+                    print("Please enter an integer between 0 and 9\n")
+            except ValueError:
+                print("Please enter an integer between 0 and 9\n")
+
+        n_consonants = 9 - n_vowels
+        print(n_vowels,' vowels, so ',n_consonants,' consonants.\n')
+
+        samples = sample_letters(n_vowels,n_consonants)
+
+        print_words(samples)
+
+    elif mode == 'C':
+        letters = []
+
+        while(len(letters) < 9):
+            letter_prompt = input("Please enter letter " + str(len(letters)+1)+":\n").upper()
+            if letter_prompt in vowels or letter_prompt in consonants:
+                letters.append(letter_prompt)
+            else:
+                print("Invalid")
+
+        print_words(letters)
+
+    elif mode == 'X':
         break
-
-# print(words_from_letters)
