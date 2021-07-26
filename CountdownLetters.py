@@ -1,3 +1,5 @@
+from typing import List
+from typing import Dict
 import random
 from TrieList import TrieList
 
@@ -8,18 +10,20 @@ from TrieList import TrieList
 #
 
 # Countdown weights letters, so some letters have more chance of appearing than others
-vowels = {'A': 15, 'E': 21, 'I': 13, 'O': 13, 'U': 5}
-weighted_vowels = [letter for letter in vowels for _ in range(vowels[letter])]
+vowels: Dict[str,int] = {'A': 15, 'E': 21, 'I': 13, 'O': 13, 'U': 5}
+weighted_vowels: List[str] = [letter for letter in vowels for _ in range(vowels[letter])]
 
-consonants = {'B': 2, 'C': 3, 'D': 6, 'F': 2, 'G': 3, 'H': 2, 'J': 1, 'K': 1, 'L': 5, 'M': 4,
+consonants: Dict[str,int] = {'B': 2, 'C': 3, 'D': 6, 'F': 2, 'G': 3, 'H': 2, 'J': 1, 'K': 1, 'L': 5, 'M': 4,
               'N': 7, 'P': 4, 'Q': 1, 'R': 9, 'S': 9, 'T': 9, 'V': 2, 'W': 2, 'X': 1, 'Y': 1, 'Z': 1}
-weighted_consonants = [letter for letter in consonants for _ in range(consonants[letter])]
+weighted_consonants: List[str] = [letter for letter in consonants for _ in range(consonants[letter])]
 
 
 # Samples the letters
-def sample_letters(n_vowels, n_consonants):
-    samples = ([random.choice(weighted_vowels) for _ in range(n_vowels)] +
+def sample_letters(n_vowels, n_consonants) -> List[str]:
+
+    samples: List[str] = ([random.choice(weighted_vowels) for _ in range(n_vowels)] +
                [random.choice(weighted_consonants) for _ in range(n_consonants)])
+
     random.shuffle(samples)
 
     # Ensure no more than 9 letters
@@ -37,18 +41,19 @@ trie = TrieList()
 
 
 # Split lines of text file
-def load_words():
+def load_words() -> List[str]:
     with open('Words_Definitions.txt') as word_file:
-        words = word_file.read().splitlines()[2:]
+        words: List[str] = word_file.read().splitlines()[2:]
 
     return words
 
 
-word_set = load_words()
+word_set: List[str] = load_words()
 
 # Dictionary of Word:Definition to populate
-word_dictionary = {}
+word_dictionary: Dict[str,str] = {}
 
+# Split each line and populate word_dictionary
 for word_definition in word_set:
 
     # Split each line to word and definition
@@ -70,15 +75,14 @@ for word in word_dictionary:
 #
 
 def print_words(letters: [str]):
-
     print('Letters: ', letters, "\n")
 
     # Find words from the trie and order them by length
-    words_from_letters = trie.find_words(letters, trie.root_node)
+    words_from_letters: List[str] = trie.find_words(letters, trie.root_node)
     words_from_letters.sort(key=len, reverse=True)
 
     # Only show words with max length, printing the word and definition
-    max_length = len(words_from_letters[0])
+    max_length: int = len(words_from_letters[0])
 
     for word in words_from_letters:
         if len(word) == max_length:
@@ -95,7 +99,7 @@ def print_words(letters: [str]):
 #
 
 while True:
-    mode = ''
+    mode: str = ''
 
     while mode != 'R' and mode != 'C' and mode != 'X':
         mode = input("Random [R], Chosen [C], Exit[X]\n").upper()
@@ -103,7 +107,7 @@ while True:
     # Random selected, so prompt the amount of vowels/consonants
     if mode == 'R':
 
-        n_vowels = -1
+        n_vowels: int = -1
 
         while not 0 <= n_vowels < 10:
 
@@ -114,18 +118,18 @@ while True:
             except ValueError:
                 print("Please enter an integer between 0 and 9\n")
 
-        n_consonants = 9 - n_vowels
-        print(n_vowels,' vowels, so ',n_consonants,' consonants.\n')
-
-        samples = sample_letters(n_vowels,n_consonants)
-
+        # Sample 9 letters
+        n_consonants: int = 9 - n_vowels
+        print(n_vowels, ' vowels, so ', n_consonants, ' consonants.\n')
+        samples: List[str] = sample_letters(n_vowels, n_consonants)
         print_words(samples)
 
     elif mode == 'C':
-        letters = []
+        letters: List[str] = []
 
-        while(len(letters) < 9):
-            letter_prompt = input("Please enter letter " + str(len(letters)+1)+":\n").upper()
+        # Ask user to choose 9 letters
+        while len(letters) < 9:
+            letter_prompt = input("Please enter letter " + str(len(letters) + 1) + ":\n").upper()
             if letter_prompt in vowels or letter_prompt in consonants:
                 letters.append(letter_prompt)
             else:
@@ -133,5 +137,6 @@ while True:
 
         print_words(letters)
 
+    # Exit
     elif mode == 'X':
         break

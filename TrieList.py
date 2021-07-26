@@ -1,3 +1,6 @@
+from typing import List
+
+
 class TrieNode:
 
     def __init__(self, letter: str, complete_word: bool):
@@ -5,7 +8,7 @@ class TrieNode:
         self.letter: str = letter
 
         # Children of this node
-        self.children: [TrieNode] = []
+        self.children: List[TrieNode] = []
 
         # If current node is a complete_word node
         self.complete_word: bool = complete_word
@@ -60,9 +63,9 @@ class TrieList:
     #
 
     # Collects all words that can be made from the letters
-    def find_words(self, letters: [str], node: TrieNode, prefix: str = '') -> [str]:
+    def find_words(self, letters: [str], node: TrieNode, prefix: str = '') -> List[str]:
 
-        valid_words = []
+        valid_words: List[str] = []
 
         if node.complete_word:
             valid_words.append(prefix)
