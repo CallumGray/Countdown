@@ -1,5 +1,6 @@
 from typing import List
 from typing import Tuple
+from typing import Set
 import random
 
 #
@@ -33,8 +34,10 @@ def target() -> int:
 class NumbersSolver:
 
     def __init__(self):
-        self.best: int = 0
-        self.best_expr: str = ''
+        # List as it needs to be indexable
+        self.bests: List[int] = [0]
+        # Set to avoid duplicates
+        self.best_exprs: Set[str] = {''}
         self.counter: int = 0
 
     # See if the number is the closest to the target
@@ -42,9 +45,18 @@ class NumbersSolver:
         num = n[0]
         expr = n[1]
 
-        if abs(target - num) < abs(target - self.best):
-            self.best = num
-            self.best_expr = expr
+        # As good as existing best
+        if abs(target - num) == abs(target - self.bests[0]):
+
+            self.best_exprs.append(expr)
+
+            if not num in self.bests:
+                self.bests.append(num)
+
+        # Better than existing best
+        elif abs(target - num) < abs(target - self.bests[0]):
+            self.bests = [num]
+            self.best_exprs = [expr]
 
     # Custom function similar to itertools.combinations(xs,2), but also
     # yields the indexes of each combination from within the original list
@@ -57,30 +69,20 @@ class NumbersSolver:
     # Get list of all values that can be made from 2 integers
     def operation_results(self, a: Tuple[int, str], b: Tuple[int, str]) -> List[Tuple[int, str]]:
 
-        # Numeric value
-        a_num = a[0]
-        b_num = b[0]
+        # Order matters for subtraction and division so need to find the biggest and smallest
+        (big_num,big_expr, small_num,small_expr) = (a[0],a[1],b[0],b[1]) if a[0] > b[0] else (b[0],b[1],a[0],a[1])
 
-        # Mathematical expression leading up to numeric value
-        a_expr = a[1]
-        b_expr = b[1]
-
-        # Order doesn't matter for addition and multiplication
-        add: Tuple[int, str] = (a_num + b_num, '(' + a_expr + '+' + b_expr + ')')
-        mult: Tuple[int, str] = (a_num * b_num, '(' + a_expr + '*' + b_expr + ')')
-
-        # Order matters for subtraction and division
-        (bigger, smaller) = ((a_num, a_expr), (b_num, b_expr)) if a_num > b_num else ((b_num, b_expr), (a_num, a_expr))
-
-        sub: Tuple[int, str] = (bigger[0] - smaller[0], '(' + bigger[1] + '-' + smaller[1] + ')')
+        add: Tuple[int, str] = (big_num + small_num, '(' + big_expr + '+' + small_expr + ')')
+        mult: Tuple[int, str] = (big_num * small_num, '(' + big_expr + '*' + small_expr + ')')
+        sub: Tuple[int, str] = (big_num - small_num, '(' + big_expr + '-' + small_expr + ')')
 
         self.counter += 3
 
         # Division is invalid if divisor is 0 or it doesn't result in an integer
-        if smaller[0] == 0 or bigger[0] % smaller[0] != 0:
+        if small_num == 0 or big_num % small_num != 0:
             return [add, sub, mult]
 
-        div: Tuple[int, str] = (bigger[0] // smaller[0], '(' + bigger[1] + '/' + smaller[1] + ')')
+        div: Tuple[int, str] = (big_num // small_num, '(' + big_expr + '/' + small_expr + ')')
         self.counter += 1
 
         return [add, sub, mult, div]
@@ -100,8 +102,8 @@ class NumbersSolver:
     def initialise(self, numbers: List[int], target: int) -> List[List[Tuple[int, str]]]:
 
         # set best to 0
-        self.best = 0
-        self.best_expr = ''
+        self.best = [0]
+        self.best_expr = {''}
 
         # Using all of the numbers on their own
         for n in numbers:
@@ -139,12 +141,23 @@ num_solver = NumbersSolver()
 
 
 def print_solution(solver: NumbersSolver, numbers: List[int], target_num: int):
+
     print("TARGET: ", target_num)
+
     numbers_list = solver.initialise(numbers, target_num)
     print([n[0][0] for n in numbers_list], "\n")
     solver.calculate_results(numbers_list, target_num)
-    print('BEST:', solver.best)
-    print(solver.best_expr, "\n")
+
+    print('BEST:')
+    for best in solver.bests:
+        print(best)
+
+    print()
+
+    print('BEST EXPRESSIONS:\n')
+    for best_expr in solver.best_exprs:
+        print(best_expr,"\n")
+
     # print('Calculations:',num_solver.counter)
 
 
@@ -152,7 +165,7 @@ while True:
     mode: str = ''
 
     while mode != 'R' and mode != 'C' and mode != 'X':
-        mode = input("Random [R], Chosen [C], Exit[X]\n").upper()
+        mode = input("Random [R], Chosen [C], Exit [X]\n").upper()
 
     if mode == 'R':
 
@@ -163,12 +176,12 @@ while True:
             try:
                 n_bigs = int(input('How many big numbers? (0 to 6) \n'))
                 if not 0 <= n_bigs <= 6:
-                    print("Please enter an integer between 0 and 6\n")
+                    print("Enter an integer between 0 and 6\n")
             except ValueError:
-                print("Please enter an integer between 0 and 6\n")
+                print("Enter an integer between 0 and 6\n")
 
         n_smalls: int = 6 - n_bigs
-        print(n_bigs, ' big numbers, so ', n_smalls, ' small numbers\n')
+        print(n_bigs, ' big numbers, ', n_smalls, ' small numbers\n')
         samples: List[int] = sample_numbers(n_bigs, n_smalls)
         print_solution(num_solver, samples, target())
 
@@ -181,13 +194,22 @@ while True:
         # Ask user to choose 9 letters
         while len(ints) < 6:
             try:
-                int_prompt = int(input("Please enter number " + str(len(ints) + 1) + ":\n"))
+                int_prompt = int(input("Number " + str(len(ints) + 1) + ":\n"))
                 ints.append(int_prompt)
 
             except ValueError:
                 print("Invalid")
 
-        print_solution(num_solver,ints,target())
+        target_prompt = None
+
+        while not target_prompt:
+
+            try:
+                target_prompt = int(input("Target:\n"))
+            except ValueError:
+                print("Invalid")
+
+        print_solution(num_solver,ints,target_prompt)
 
     # Exit
     elif mode == 'X':

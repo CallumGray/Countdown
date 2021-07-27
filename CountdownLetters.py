@@ -102,7 +102,7 @@ while True:
     mode: str = ''
 
     while mode != 'R' and mode != 'C' and mode != 'X':
-        mode = input("Random [R], Chosen [C], Exit[X]\n").upper()
+        mode = input("Random [R], Chosen [C], Exit [X]\n").upper()
 
     # Random selected, so prompt the amount of vowels/consonants
     if mode == 'R':
@@ -112,15 +112,15 @@ while True:
         while not 0 <= n_vowels < 10:
 
             try:
-                n_vowels = int(input('How many vowels? (out of 9) \n'))
+                n_vowels = int(input('How many vowels? (0 to 9) \n'))
                 if not 0 <= n_vowels < 10:
-                    print("Please enter an integer between 0 and 9\n")
+                    print("Enter an integer between 0 and 9\n")
             except ValueError:
-                print("Please enter an integer between 0 and 9\n")
+                print("Enter an integer between 0 and 9\n")
 
         # Sample 9 letters
         n_consonants: int = 9 - n_vowels
-        print(n_vowels, ' vowels, so ', n_consonants, ' consonants\n')
+        print(n_vowels, ' vowels, ', n_consonants, ' consonants\n')
         samples: List[str] = sample_letters(n_vowels, n_consonants)
         print_words(samples)
 
@@ -129,7 +129,7 @@ while True:
 
         # Ask user to choose 9 letters
         while len(letters) < 9:
-            letter_prompt = input("Please enter letter " + str(len(letters) + 1) + ":\n").upper()
+            letter_prompt = input("Letter " + str(len(letters) + 1) + ":\n").upper()
             if letter_prompt in vowels or letter_prompt in consonants:
                 letters.append(letter_prompt)
             else:
