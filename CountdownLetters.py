@@ -112,7 +112,7 @@ while True:
         while not 0 <= n_vowels < 10:
 
             try:
-                n_vowels = int(input('How many Vowels? (out of 9) \n'))
+                n_vowels = int(input('How many vowels? (out of 9) \n'))
                 if not 0 <= n_vowels < 10:
                     print("Please enter an integer between 0 and 9\n")
             except ValueError:
@@ -120,7 +120,7 @@ while True:
 
         # Sample 9 letters
         n_consonants: int = 9 - n_vowels
-        print(n_vowels, ' vowels, so ', n_consonants, ' consonants.\n')
+        print(n_vowels, ' vowels, so ', n_consonants, ' consonants\n')
         samples: List[str] = sample_letters(n_vowels, n_consonants)
         print_words(samples)
 
